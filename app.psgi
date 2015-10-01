@@ -4,6 +4,9 @@ use File::Spec;
 use File::Temp qw/ tempfile tempdir /;
 use Imager;
 
+use lib 'lib';
+use RemoteImageDriver::Imager;
+
 our $VERSION = '0.01';
 
 my $temp_dir = tempdir();
@@ -34,17 +37,8 @@ post 'scale' => sub {
     my $width  = $c->param('width');
     my $height = $c->param('height');
 
-    my $imager = Imager->new;
-    $imager->read( file => $filename );
-
-    $imager = $imager->scale(
-        xpixels => $width,
-        ypixels => $height,
-        type    => 'nonprop',
-    );
-
-    my $blob;
-    $imager->write( data => \$blob, type => $suffix );
+    my $driver = RemoteImageDriver::Imager->new( $filename, $suffix );
+    my $blob = $driver->scale( width => $width, height => $height );
 
     $c->render( data => $blob, format => $suffix );
 };
@@ -58,18 +52,13 @@ post 'crop_rectangle' => sub {
     my $width  = $c->param('width');
     my $height = $c->param('height');
 
-    my $imager = Imager->new;
-    $imager->read( file => $filename );
-
-    $imager = $imager->crop(
+    my $driver = RemoteImageDriver::Imager->new( $filename, $suffix );
+    my $blob = $driver->crop_rectangle(
         left   => $left,
         top    => $top,
         width  => $width,
         height => $height,
     );
-
-    my $blob;
-    $imager->write( data => \$blob, type => $suffix );
 
     $c->render( data => $blob, format => $suffix );
 };
@@ -78,13 +67,8 @@ post 'flip_horizontal' => sub {
     my $c = shift;
     my ( $filename, $suffix ) = $c->upload_file;
 
-    my $imager = Imager->new;
-    $imager->read( file => $filename );
-
-    $imager->flip( dir => 'h' );
-
-    my $blob;
-    $imager->write( data => \$blob, type => $suffix );
+    my $driver = RemoteImageDriver::Imager->new( $filename, $suffix );
+    my $blob = $driver->flip_hozontal;
 
     $c->render( data => $blob, format => $suffix );
 };
@@ -93,13 +77,8 @@ post 'flip_vertical' => sub {
     my $c = shift;
     my ( $filename, $suffix ) = $c->upload_file;
 
-    my $imager = Imager->new;
-    $imager->read( file => $filename );
-
-    $imager->flip( dir => 'v' );
-
-    my $blob;
-    $imager->write( data => \$blob, type => $suffix );
+    my $driver = RemoteImageDriver::Imager->new( $filename, $suffix );
+    my $blob = $driver->flip_vertical;
 
     $c->render( data => $blob, format => $suffix );
 };
@@ -111,13 +90,8 @@ post 'rotate' => sub {
     my $degrees = $c->param('degrees');
     $degrees %= 360;
 
-    my $imager = Imager->new;
-    $imager->read( file => $filename );
-
-    $imager = $imager->rotate( right => $degrees );
-
-    my $blob;
-    $imager->write( data => \$blob, type => $suffix );
+    my $driver = RemoteImageDriver::Imager->new( $filename, $suffix );
+    my $blob = $driver->rotate( degrees => $degrees );
 
     $c->render( data => $blob, format => $suffix );
 };
@@ -128,11 +102,8 @@ post 'convert' => sub {
 
     my $type = $c->param('type');
 
-    my $imager = Imager->new;
-    $imager->read( file => $filename );
-
-    my $blob;
-    $imager->write( data => \$blob, type => $type );
+    my $driver = RemoteImageDriver::Imager->new( $filename, $suffix );
+    my $blob = $driver->convert( type => $type );
 
     $c->render( data => $blob, format => $type );
 };
