@@ -1,0 +1,13 @@
+name: RemoteImageDriver
+version: 0.01
+
+plugin_link: https://github.com/masiuchi/mt-plugin-remote-image-driver
+description: <__trans phrase="ImageDriver provided as REST API.">
+
+author_name: Masahiro Iuchi
+author_link: https://github.com/masiuchi
+
+config_settings:
+  RemoteImageDriver:
+    default: https://remote-magick.herokuapp.com
+
