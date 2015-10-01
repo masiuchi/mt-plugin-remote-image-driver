@@ -9,5 +9,5 @@ author_link: https://github.com/masiuchi
 
 config_settings:
   RemoteImageDriver:
-    default: https://remote-magick.herokuapp.com
+    default: https://remote-image-driver.herokuapp.com
 
